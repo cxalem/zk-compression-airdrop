@@ -47,7 +47,8 @@ RPC_ENDPOINT=https://devnet.helius-rpc.com?api-key=YOUR_HELIUS_API_KEY
 DEV_WALLET=your_base58_private_key_here
 ```
 
-> **Important**: 
+> **Important**:
+>
 > - Get your Helius API key from https://dev.helius.xyz/
 > - To get your Base58 private key from Phantom: Settings → Show Private Key → Copy
 > - `DEV_WALLET` works for both scripts and frontend (via next.config.ts)
@@ -66,6 +67,7 @@ Or use the [Solana Faucet](https://faucet.solana.com/).
 ### 4. Run Complete Airdrop Setup
 
 This single command will:
+
 1. Generate test wallet recipients
 2. Create a compressed token mint
 3. Generate the airdrop recipients list
@@ -100,15 +102,19 @@ pnpm airdrop:recipients
 ## How It Works
 
 ### 1. **Compressed Token Mint**
+
 Creates an SPL token registered with Light Protocol's compression program. The token pool enables rent-free compressed accounts.
 
 ### 2. **Test Wallets**
+
 Generates Solana keypairs that will receive the airdrop tokens. In production, you'd load real recipient addresses.
 
 ### 3. **Airdrop Execution**
+
 The mint authority calls `mintTo()` in batches, directly minting compressed tokens to recipients. No merkle proofs needed - the authority can mint directly.
 
 ### 4. **Batching**
+
 Splits recipients across multiple transactions to stay within transaction size limits. Configurable via UI slider (max 50 per batch).
 
 ## Project Structure
@@ -140,11 +146,13 @@ Splits recipients across multiple transactions to stay within transaction size l
 ### What's Different?
 
 **Standard SPL Tokens:**
+
 - Each token account costs ~0.002 SOL rent
 - 1000 recipients = ~2 SOL in rent fees
 - Visible on standard explorers
 
 **ZK Compressed Tokens:**
+
 - Token accounts stored in Merkle trees
 - ~5000x cheaper (no rent!)
 - 1000 recipients = ~0.0004 SOL
@@ -165,12 +173,12 @@ Compressed token accounts are stored in on-chain Merkle trees, not as individual
 Edit `scripts/create-compressed-mint.ts`:
 
 ```typescript
-const decimals = 9; // Token decimals
+const decimals = 9 // Token decimals
 const config = {
   name: 'My Airdrop Token',
   symbol: 'AIRDROP',
   // ... rest of config
-};
+}
 ```
 
 ### Change Recipient Amounts
@@ -181,7 +189,7 @@ Edit `scripts/generate-recipients.ts`:
 return wallets.map((w, i) => ({
   address: address(w.address),
   amount: 100 * (i + 1), // Customize amounts here
-}));
+}))
 ```
 
 ### Adjust Max Batch Size
@@ -194,30 +202,35 @@ maxBatchSize={Math.min(airdropData.recipients.length, 50)} // Change 50 to your 
 
 ## Scripts Reference
 
-| Script | Description |
-|--------|-------------|
-| `pnpm airdrop:setup` | Complete setup: wallets + mint + recipients |
-| `pnpm airdrop:wallets` | Generate test wallet recipients |
-| `pnpm airdrop:mint` | Create compressed token mint |
-| `pnpm airdrop:recipients` | Generate airdrop recipients list |
-| `pnpm dev` | Start development server |
-| `pnpm build` | Build for production |
+| Script                    | Description                                 |
+| ------------------------- | ------------------------------------------- |
+| `pnpm airdrop:setup`      | Complete setup: wallets + mint + recipients |
+| `pnpm airdrop:wallets`    | Generate test wallet recipients             |
+| `pnpm airdrop:mint`       | Create compressed token mint                |
+| `pnpm airdrop:recipients` | Generate airdrop recipients list            |
+| `pnpm dev`                | Start development server                    |
+| `pnpm build`              | Build for production                        |
 
 ## Troubleshooting
 
 ### "RPC_ENDPOINT environment variable not set"
+
 Make sure you've created `.env.local` and added your Helius RPC endpoint.
 
 ### "DEV_WALLET environment variable not set"
+
 Add your Base58 private key to `DEV_WALLET` in `.env.local`. It's exposed to both scripts and frontend via `next.config.ts`.
 
 ### "401 Unauthorized: Invalid API key"
+
 Your Helius API key is incorrect. Get a new one from https://dev.helius.xyz/
 
 ### "Wallet not authorized"
+
 The connected wallet must match the mint authority. Connect the wallet whose private key is in `DEV_WALLET`.
 
 ### "Transaction not found on Solscan"
+
 This is expected! Compressed tokens use Merkle trees. Check the mint address on Solana Explorer instead.
 
 ## Production Deployment
