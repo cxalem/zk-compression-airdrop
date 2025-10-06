@@ -7,7 +7,11 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "airdrop:setup": "npm run airdrop:wallets && npm run airdrop:mint && npm run airdrop:recipients",
+    "airdrop:wallets": "npx tsx scripts/generate-test-wallets.ts",
+    "airdrop:mint": "npx tsx scripts/create-compressed-mint.ts",
+    "airdrop:recipients": "npx tsx scripts/generate-recipients.ts"
   },
   "description": "Minimal Next.js, Tailwind, gill (based on @solana/kit), Wallet UI",
   "keywords": [
