@@ -25,7 +25,7 @@ A Next.js application for distributing SPL tokens using [ZK Compression](https:/
 3. **Solana Wallet** with devnet SOL
 4. **Helius RPC API Key** (free tier works) - [Get one here](https://dev.helius.xyz/)
 
-> **Why Helius?** ZK Compression requires special indexer nodes to query compressed accounts. Helius provides this for free on devnet.
+> **Why Helius?** ZK Compression requires special [Photon indexer nodes](https://www.zkcompression.com/references/terminology) to query compressed accounts and generate validity proofs. Helius runs these indexers for free on devnet. Regular Solana RPC nodes can't parse compressed account data stored in Merkle trees.
 
 ## Quick Start
 
@@ -45,13 +45,12 @@ RPC_ENDPOINT=https://devnet.helius-rpc.com?api-key=YOUR_HELIUS_API_KEY
 
 # Your wallet's private key (Base58 encoded) - KEEP THIS SECRET!
 DEV_WALLET=your_base58_private_key_here
-NEXT_PUBLIC_DEV_WALLET=your_base58_private_key_here
 ```
 
 > **Important**: 
 > - Get your Helius API key from https://dev.helius.xyz/
 > - To get your Base58 private key from Phantom: Settings → Show Private Key → Copy
-> - `DEV_WALLET` is for scripts, `NEXT_PUBLIC_DEV_WALLET` is for the frontend
+> - `DEV_WALLET` works for both scripts and frontend (via next.config.ts)
 > - **Never commit your `.env.local` file!**
 
 ### 3. Get Devnet SOL
@@ -153,11 +152,11 @@ Splits recipients across multiple transactions to stay within transaction size l
 
 ### Why Transactions Don't Appear on Solscan
 
-Compressed token accounts are stored in on-chain Merkle trees, not as individual accounts. Standard explorers can't decode this data structure. Use:
+Compressed token accounts are stored in on-chain Merkle trees, not as individual accounts. Standard explorers can't decode this data structure. To query compressed accounts:
 
-1. **Mint address** on Solana Explorer (works fine)
-2. **ZK Compression RPC** to query balances programmatically
-3. **Light Protocol Explorer** (coming soon)
+1. **Mint address** on Solana Explorer (shows the mint, not individual accounts)
+2. **Photon RPC** with [special methods](https://www.zkcompression.com/resources/json-rpc-methods) like `getCompressedTokenAccountsByOwner`
+3. **RPC providers** that run Photon indexers (Helius, Triton, or [run your own](https://www.zkcompression.com/learn/node-operators))
 
 ## Customization
 
@@ -210,7 +209,7 @@ maxBatchSize={Math.min(airdropData.recipients.length, 50)} // Change 50 to your 
 Make sure you've created `.env.local` and added your Helius RPC endpoint.
 
 ### "DEV_WALLET environment variable not set"
-Add your Base58 private key to both `DEV_WALLET` and `NEXT_PUBLIC_DEV_WALLET` in `.env.local`.
+Add your Base58 private key to `DEV_WALLET` in `.env.local`. It's exposed to both scripts and frontend via `next.config.ts`.
 
 ### "401 Unauthorized: Invalid API key"
 Your Helius API key is incorrect. Get a new one from https://dev.helius.xyz/
@@ -232,6 +231,9 @@ This is expected! Compressed tokens use Merkle trees. Check the mint address on 
 ## Resources
 
 - [ZK Compression Documentation](https://www.zkcompression.com/)
+- [Photon Indexer (Terminology)](https://www.zkcompression.com/references/terminology)
+- [ZK Compression RPC Methods](https://www.zkcompression.com/resources/json-rpc-methods)
+- [Run Your Own Indexer](https://www.zkcompression.com/learn/node-operators)
 - [Light Protocol GitHub](https://github.com/Lightprotocol)
 - [Gill SDK](https://gill.site/)
 - [Solana Wallet UI](https://registry.wallet-ui.dev)
