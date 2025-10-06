@@ -1,26 +1,36 @@
 'use client'
 
-import { useSolana } from '@/components/solana/use-solana'
+import { AirdropExecutor } from '@/components/airdrop'
 import { WalletDropdown } from '@/components/wallet-dropdown'
 import { WalletDisconnect } from '@/components/wallet-disconnect'
-import { AppExplorerLink } from '@/components/app-explorer-link'
+import { useSolana } from '@/components/solana/use-solana'
 import { ellipsify } from '@wallet-ui/react'
-import { ClusterDropdown } from '@/components/cluster-dropdown'
+import config from '@/../scripts/compressed-mint-config.json'
+import airdropData from '@/../scripts/airdrop-recipients.json'
 
 export default function Home() {
   const { account } = useSolana()
+
   return (
-    <div className="flex flex-col items-center my-12 gap-4">
-      <div className=" text-2xl ">gm.</div>
-      <ClusterDropdown />
-      {account ? (
-        <>
-          <WalletDisconnect />
-          <AppExplorerLink address={account.address} label={`Connected to ${ellipsify(account.address)}`} />
-        </>
-      ) : (
-        <WalletDropdown />
-      )}
-    </div>
+    <main className="container mx-auto py-8 max-w-4xl">
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-4xl font-bold mb-2">ZK Compressed Token Airdrop</h1>
+          <p className="text-muted-foreground">Distribute {config.symbol} tokens to recipients using ZK compression</p>
+        </div>
+        <div className="flex flex-col gap-2 items-end">
+          {account ? (
+            <>
+              <div className="text-sm text-muted-foreground">{ellipsify(account.address)}</div>
+              <WalletDisconnect />
+            </>
+          ) : (
+            <WalletDropdown />
+          )}
+        </div>
+      </div>
+
+      <AirdropExecutor config={config} airdropData={airdropData} />
+    </main>
   )
 }
