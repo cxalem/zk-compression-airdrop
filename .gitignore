@@ -49,3 +49,10 @@ target
 node_modules
 test-ledger
 .yarn
+
+dev-wallet.json
+
+# airdrop scripts
+scripts/test-wallets.json
+scripts/compressed-mint-config.json
+scripts/airdrop-recipients.json
